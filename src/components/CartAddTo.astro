@@ -9,28 +9,38 @@ interface Props {
 const { id, title, price, image } = Astro.props;
 ---
 
-<button
-    type="button"
-    class="primary"
-    data-add-to-cart
+<astro-add-to-cart
+    data-id={id}
+    data-title={title}
+    data-price={price}
+    data-image={image}
 >
-    <slot />
-</button>
+    <button type="button" class="primary">
+        <slot />
+    </button>
+</astro-add-to-cart>
 
+<script is:inline>
+    (() => {
+        customElements.define(
+            "astro-add-to-cart",
+            class extends HTMLElement {
+                connectedCallback() {
+                    const { id, title, price, image } = this.dataset;
 
-<script is:inline define:vars={{ id, title, price, image }}>
-    const buttons = document.querySelectorAll("[data-add-to-cart]");
+                    const button = this.querySelector("button");
+                    button.addEventListener("click", () => {
+                        const astroCart = document.querySelector("astro-cart");
 
-    buttons.forEach((button) => {
-        button.addEventListener("click", addToCart);
-    });
+                        if (!astroCart) {
+                            console.error("Cart store not available.");
+                            return;
+                        }
 
-    function addToCart() {
-        const astroCart = document.querySelector("astro-cart");
-        if (!astroCart) {
-            console.error("Cart store not available.");
-            return;
-        }
-        astroCart.add({ id, title, price, image });
-    }
+                        astroCart.add({ id, title, price, image });
+                    });
+                }
+            },
+        );
+    })();
 </script>

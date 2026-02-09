@@ -50,13 +50,15 @@ const { products } = Astro.props;
 										itemscope
 										itemtype="https://schema.org/Offer"
 									>
-										$<span itemprop="price">{product.price}</span>
+										$
+										<span itemprop="price">
+											{product.price}
+										</span>
 										<meta
 											itemprop="priceCurrency"
 											content="USD"
 										/>
 									</div>
-									
 								</figcaption>
 							</figure>
 						</a>
@@ -71,12 +73,12 @@ const { products } = Astro.props;
 	/* 
 	Scoped styles for the ProductList component.
 	*/
-	
+
 	[itemtype="https://schema.org/ProductList"] {
 		margin-block: var(--size-fluid-4);
 	}
 
-	[itemtype="https://schema.org/ListItem"] {
+	[itemprop="itemListElement"] {
 		transition:
 			transform 1s var(--ease-spring-3) 0.5s,
 			opacity 1s ease 0.5s;
@@ -88,7 +90,7 @@ const { products } = Astro.props;
 		}
 	}
 
-	[itemtype="https://schema.org/Product"] {
+	[itemprop="item"] {
 		padding-block-start: 0;
 		font-size: var(--size-4);
 		&:has(> :hover, > :focus-within) {
@@ -122,6 +124,7 @@ const { products } = Astro.props;
 
 	[itemprop="offers"] {
 		color: var(--text-1);
+		font-weight: bold;
 
 		@media (prefers-color-scheme: dark) {
 			text-shadow:
@@ -132,7 +135,5 @@ const { products } = Astro.props;
 		@media (prefers-color-scheme: dark) {
 			text-shadow: 0 0 15px var(--indigo-7);
 		}
-
-		font-weight: bold;
 	}
 </style>
