@@ -37,6 +37,7 @@ By Martin Hintzmann Jürs, 2026-02-08
 - Better UX for Cart (Ex. Input number Quantity)
 - Example for use of React, Vue, Svelte, etc.
 - PostCSS (Just In Time) Props
+- Add astro:transitions
 
 ## Development
 
