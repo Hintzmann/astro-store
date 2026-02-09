@@ -41,7 +41,6 @@
                 }
                 
                 handleEvent (e) {
-                    console.log(this.hasAttribute('is-ready'));
                     if (e.type === "animationend") {
                         this.#badge.classList.remove(this.#animationClass);
                         return;
