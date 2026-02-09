@@ -11,8 +11,8 @@ By Martin Hintzmann Jürs, 2026-02-08
 - Script
     - Primary Typescript & some Javascript
     - Astro Props
-    - <slot>
-    - Web Component <astro-cart />
+    - `<slot>`
+    - Web Component `<astro-cart />`
 - Style
     - Open-props.style
     - Basic stylesheet 
