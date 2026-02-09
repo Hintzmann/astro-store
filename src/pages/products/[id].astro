@@ -1,0 +1,149 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getProduct } from "../../api";
+import CartAddTo from "../../components/CartAddTo.astro";
+
+const id = Number(Astro.params.id);
+const product = await getProduct(Astro.request, id);
+---
+
+<BaseLayout title={product.title} description="{product.description}">
+	<article class="grid" itemscope itemtype="https://schema.org/Product">
+		<div>
+			<div class="popout" style="--popout-padding: var(--size-9);">
+				<img
+					itemprop="image"
+					src={product.image}
+					alt="{product.title}"
+					fetchpriority="high"
+				/>
+			</div>
+		</div>
+		<div>
+			<h1 itemprop="name">{product.title}</h1>
+
+			<p itemprop="category">{product.category}</p>
+
+			<div class="stack">
+				<section
+					itemprop="aggregateRating"
+					itemscope
+					itemtype="https://schema.org/AggregateRating"
+				>
+					<h2 class="sr-only">Product Rating</h2>
+					<span
+						itemprop="ratingValue"
+						style={`--rating: ${product.rating.rate};`}
+						aria-label={`Rating of this product is ${product.rating.rate} out of 5.`}
+					>
+						<span>{product.rating.rate}</span>
+					</span>
+					<span>
+						(<span itemprop="ratingCount"
+							>{product.rating.count}</span
+						> ratings)
+					</span>
+				</section>
+			</div>
+
+			<section>
+				<h2>Description</h2>
+				<p itemprop="description">{product.description}</p>
+			</section>
+
+			<div class="stack">
+				<div
+					itemprop="offers"
+					itemscope
+					itemtype="https://schema.org/Offer"
+				>
+					<span class="sr-only">Price:</span> $<span itemprop="price"
+						>{product.price}</span
+					>
+					<meta itemprop="priceCurrency" content="USD" />
+				</div>
+				<CartAddTo
+					id={product.id}
+					title={product.title}
+					price={product.price}
+					image={product.image}>
+					Add to cart
+				</CartAddTo>
+			</div>
+		</div>
+	</article>
+</BaseLayout>
+
+<style>
+	[itemtype="https://schema.org/Product"] {
+		margin-block-start: var(--size-fluid-6);
+	}
+	[itemprop="name"] {
+		font-size: var(--font-size-fluid-2);
+		margin-block-end: var(--size-fluid-2);
+	}
+
+	[itemprop="image"] {
+		width: 100%;
+		height: auto;
+		border-radius: var(--radius-4);
+		filter: drop-shadow(0 0 25px var(--gray-7));
+	}
+
+	[itemprop="offers"] {
+		font-size: var(--font-size-fluid-1);
+		color: var(--text-1);
+
+		@media (prefers-color-scheme: dark) {
+			text-shadow:
+				0 0 10px var(--indigo-5),
+				0 0 25px var(--indigo-7);
+		}
+
+		@media (prefers-color-scheme: light) {
+			text-shadow: 0 0 15px var(--indigo-7);
+		}
+
+		font-weight: bold;
+	}
+
+	[itemprop="category"] {
+		padding: var(--size-2);
+		border: var(--border-size-1) solid var(--indigo-6);
+		border-radius: var(--radius-round);
+		display: inline-block;
+		text-box: trim-both cap alphabetic;
+	}
+
+	[itemprop="aggregateRating"] {
+		color: var(--text-2);
+	}
+
+	[itemprop="ratingValue"] {
+		--star-size: var(--size-5);
+		--star-color: light-dark(var(--gray-5), var(--gray-6));
+		--star-background: var(--purple-5);
+		--percent: calc(var(--rating) / 5 * 100%);
+
+		color: var(--text-1);
+		display: inline-block;
+		font-size: var(--star-size);
+		line-height: 1;
+		font-weight: bold;
+
+		&::after {
+			content: "★★★★★";
+			letter-spacing: 3px;
+			background: linear-gradient(
+				90deg,
+				var(--star-background) var(--percent),
+				var(--star-color) var(--percent)
+			);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+		}
+	}
+	[itemprop="description"] {
+		margin-block-end: var(--size-fluid-4);
+	}
+</style>

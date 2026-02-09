@@ -1,0 +1,130 @@
+---
+
+---
+
+<dialog id="cart-dialog" class="drawer" closedby="any">
+    <h2>Shopping Cart</h2>
+
+    <div id="cart-contents">
+        <p>Your cart is currently empty.</p>
+    </div>
+
+    <div class="cart-actions">
+        <button class="primary" id="cart-clear">Clear</button>
+        <button class="primary" commandfor="cart-dialog" command="close">Close</button>
+    </div>
+
+    <script is:inline>
+        (async () => {
+            const contents = document.getElementById('cart-contents');
+            const clearBtn = document.getElementById('cart-clear');
+
+            function renderItems(items) {
+                if (!contents) return;
+                if (!items || items.length === 0) {
+                    contents.innerHTML = '<p>Your cart is currently empty.</p>';
+                    return;
+                }
+
+                const list = document.createElement('ul');
+                list.className = 'cart-list list-unstyled stack';
+
+                items.forEach((it) => {
+                    const li = document.createElement('li');
+                    li.className = 'cart-item grid';
+                    li.style = '--grid-min: var(--size-9)';
+                    li.innerHTML = `
+                        <div class="popout">
+                            <img src="${it.image}" alt="" class="cart-item-img"/>    
+                        </div>
+                        <div>
+                        <div class="cart-item-info">
+                            <div class="cart-item-title"><strong>${String(it.title)}</strong></div>
+                            <div class="cart-item-qty">Qty: ${it.quantity}</div>
+                        </div>
+                        <div class="cart-item-price">$${it.price}</div>
+                        <button class="cart-remove" data-remove-id="${it.id}">Remove</button>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                });
+
+                contents.innerHTML = '';
+                contents.appendChild(list);
+            }
+
+            function updateFromStore(detail) {
+                if (detail && Array.isArray(detail.items)) {
+                    renderItems(detail.items);
+                } else {
+                    // fallback: try to read the component directly
+                    const el = document.querySelector('astro-cart');
+                    if (el && typeof el.get === 'function') {
+                        renderItems(el.get());
+                    }
+                }
+            }
+
+            // Listen to cart updates
+            window.addEventListener('cart:update', (e) => updateFromStore(e.detail));
+
+            // Initial render
+            const el = document.querySelector('astro-cart');
+            if (el && typeof el.get === 'function') {
+                renderItems(el.get());
+            }
+
+            // Clear button
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    const store = document.querySelector('astro-cart');
+                    if (store && typeof store.clear === 'function') store.clear();
+                });
+            }
+
+            // Delegate remove button clicks inside cart contents
+            contents && contents.addEventListener('click', (ev) => {
+                const btn = ev.target.closest && ev.target.closest('[data-remove-id]');
+                if (!btn) return;
+                const id = btn.dataset.removeId;
+                const store = document.querySelector('astro-cart');
+                if (store && typeof store.remove === 'function') store.remove(id);
+            });
+        })();
+    </script>
+</dialog>
+
+<style>
+    html:has([open]:modal) {
+        /* overflow: hidden; */
+    }
+    dialog {
+        --background-color: var(--surface-4);
+        --border-color: var(--surface-4);
+        --color: var(--text-1);
+        --padding: var(--size-3);
+        --width: var(--size-15);
+        background-color: var(--background-color);
+        border: 1px solid var(--border-color);
+        color: var(--color);
+        max-height: 100%;
+        max-width: 100%;
+        padding: var(--padding);
+        width: var(--width);
+
+        border-radius: 0;
+        max-height: 100%;
+        max-width: 100%;
+        margin: 0;
+        height: 100%;
+        inset-inline-end: 0;
+        inset-inline-start: auto;
+    }
+
+    dialog:modal::backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }    
+    h2 {
+        margin-block-end: var(--size-8);
+    }
+</style>

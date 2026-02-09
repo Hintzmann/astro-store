@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "jsxImportSource": "astro/jsx-runtime",
+    "types": ["astro/client", "node"]
+  },
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}

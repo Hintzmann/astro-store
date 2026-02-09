@@ -1,0 +1,203 @@
+/* 
+    Open Props
+    Total Library: ~13.2 KB minificeret + gzipped  
+    @import "open-props/style"; 
+*/
+@import "open-props/indigo";
+@import "open-props/gray";
+@import "open-props/purple";
+@import "open-props/borders";
+@import "open-props/shadows";
+@import "open-props/gradients";
+@import "open-props/fonts";
+@import "open-props/sizes";
+@import "open-props/easings";
+@import "open-props/buttons";
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+        --link: var(--indigo-5);
+        --link-visited: var(--purple-5);
+        --text-1: var(--gray-0);
+        --text-2: var(--gray-4);
+        --surface-1: var(--gray-12);
+        --surface-2: var(--gray-11);
+        --surface-3: var(--gray-10);
+        --surface-4: var(--gray-9);
+        --scrollthumb-color: var(--gray-6);
+        --shadow-strength: 10%;
+        --shadow-color: 220 40% 2%;
+        --inner-shadow-highlight: inset 0 -.5px 0 0 rgba(255, 255, 255, .06667), inset 0 .5px 0 0 rgba(0, 0, 0, .46667);
+        --brand: var(--indigo-5);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        color-scheme: light;
+        --link: var(--indigo-8);
+        --link-visited: var(--purple-8);
+        --text-1: var(--gray-12);
+        --text-2: var(--gray-7);
+        --surface-1: var(--gray-0);
+        --surface-2: var(--gray-1);
+        --surface-3: var(--gray-2);
+        --surface-4: var(--gray-3);
+        --scrollthumb-color: var(--gray-7);
+        --shadow-strength: 10%;
+        --shadow-color: 220 40% 2%;
+        --inner-shadow-highlight: inset 0 -.5px 0 0 rgba(255, 255, 255, .06667), inset 0 .5px 0 0 rgba(0, 0, 0, .46667);
+        --brand: var(--indigo-8);
+    }
+}
+
+html {
+    scrollbar-color: var(--scrollthumb-color) transparent;
+    accent-color: var(--brand, var(--link));
+    caret-color: var(--brand, var(--link));
+    color: var(--text-1);
+    background-color: var(--surface-2);
+    font-family: var(--font-sans);
+    letter-spacing: var(--font-letterspacing-1);
+    overflow-y: scroll;
+}
+
+body {
+    min-height: 100dvh;
+    padding: var(--size-fluid-4);
+    margin: 0;
+}
+
+a[href] {
+    color: var(--brand, var(--link));
+
+    &:where(:visited) {
+        color: var(--link-visited);
+    }
+}
+
+:focus-visible:not(button) {
+    outline: 3px solid var(--brand, var(--link));
+    border-radius: var(--radius-4);
+    outline-offset: 4px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+h1 {
+    line-height: var(--font-lineheight-1);
+    font-size: var(--font-size-fluid-3);
+    font-weight: var(--font-weight-9);
+    font-family: var(--font-sans);
+    margin-block-end: var(--size-fluid-5);
+}
+
+h2 {
+    font-size: var(--font-size-3);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+figure {
+    margin: 0;
+}
+
+figcaption {
+    padding-block: var(--size-fluid-1);
+    padding-inline: var(--size-fluid-3);
+}
+
+.list-unstyled {
+    padding-left: 0;
+    list-style: none;
+}
+
+@layer layout {
+    .container {
+        --container-max-width: 90rem;
+        max-width: var(--container-max-width);
+        margin-inline: auto;
+    }
+
+    .grid {
+        --grid-gap: var(--size-10) var(--size-8);
+        --grid-min: var(--size-14);
+
+        display: grid;
+        gap: var(--grid-gap);
+        grid-template-columns: repeat(auto-fit, minmax(min(var(--grid-min), 100%), 1fr));
+    }
+
+    .stack>*+* {
+        margin-block-start: var(--size-3);
+    }
+}
+
+.popout {
+    --popout-padding: var(--size-6);
+    --popout-offset: var(--size-4);
+    --popout-background: var(--surface-1);
+    --popout-radius: var(--radius-4);
+
+    background: var(--popout-background);
+    border-radius: var(--popout-radius);
+    padding: var(--popout-padding);
+    padding-block: 0;
+
+    >img {
+        position: relative;
+        top: calc(var(--popout-offset) * -1);
+    }
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+button.primary {
+    background-color: var(--indigo-9);
+    color: var(--indigo-1);
+    border-color: var(--indigo-9);
+    text-shadow: 0 1px 0 var(--indigo-10);
+
+    transition:
+        border-color .5s var(--ease-3),
+        box-shadow 145ms var(--ease-4),
+        outline-offset 145ms var(--ease-4),
+        filter 145ms var(--ease-4);
+
+    &:hover {
+        filter: drop-shadow(0 0 10px var(--indigo-5)) drop-shadow(0 0 25px var(--indigo-7));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    :after,
+    :before {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        animation-delay: 0ms !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+        scroll-behavior: auto !important;
+    }
+}

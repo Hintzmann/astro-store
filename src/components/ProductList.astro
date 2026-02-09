@@ -1,0 +1,138 @@
+---
+import type { Product } from "../api";
+
+interface Props {
+	products: Product[];
+}
+
+const { products } = Astro.props;
+---
+
+<section itemscope itemtype="https://schema.org/ProductList">
+	<slot name="title" />
+
+	<ul class="grid list-unstyled">
+		{
+			products.map((product) => (
+				<li
+					itemprop="itemListElement"
+					itemscope
+					itemtype="https://schema.org/ListItem"
+				>
+					<meta
+						itemprop="position"
+						content={(products.indexOf(product) + 1).toString()}
+					/>
+
+					<div
+						itemprop="item"
+						itemscope
+						itemtype="https://schema.org/Product"
+					>
+						<a
+							href={`/products/${product.id}`}
+							itemprop="url"
+							aria-label={`View details for ${product.title}`}
+						>
+							<figure>
+								<div class="popout">
+									<img
+										itemprop="image"
+										src={product.image}
+										alt="{product.title}"
+										fetchpriority="high"
+									/>
+								</div>
+								<figcaption>
+									<div itemprop="name">{product.title}</div>
+									<div
+										itemprop="offers"
+										itemscope
+										itemtype="https://schema.org"
+									>
+										$<span itemprop="price">{product.price}</span>
+										<meta
+											itemprop="priceCurrency"
+											content="USD"
+										/>
+									</div>
+									
+								</figcaption>
+							</figure>
+						</a>
+					</div>
+				</li>
+			))
+		}
+	</ul>
+</section>
+
+<style>
+	/* 
+	Scoped styles for the ProductList component.
+	*/
+	
+	[itemtype="https://schema.org/ProductList"] {
+		margin-block: var(--size-fluid-4);
+	}
+
+	[itemtype="https://schema.org/ListItem"] {
+		transition:
+			transform 1s var(--ease-spring-3) 0.5s,
+			opacity 1s ease 0.5s;
+		transition-delay: calc(sibling-index() * 100ms);
+
+		@starting-style {
+			opacity: 0;
+			transform: scale(0);
+		}
+	}
+
+	[itemtype="https://schema.org/Product"] {
+		padding-block-start: 0;
+		font-size: var(--size-4);
+		&:has(> :hover, > :focus-within) {
+			[itemprop="image"] {
+				transform: scale(1.05);
+				transition: transform 0.3s ease;
+				filter: drop-shadow(0 0 10px var(--indigo-5))
+					drop-shadow(0 0 25px var(--indigo-7));
+			}
+		}
+	}
+
+	[itemprop="url"] {
+		display: block;
+		text-decoration: none;
+	}
+
+	[itemprop="image"] {
+		aspect-ratio: 1;
+		object-fit: contain;
+		will-change: transform;
+		transition: transform 0.3s ease;
+		margin-block-start: calc(var(--size-8) * -1);
+		margin-inline: auto;
+	}
+
+	[itemprop="name"] {
+		font-weight: 600;
+		margin-block-end: var(--size-fluid-1);
+	}
+
+	[itemprop="offers"] {
+		color: var(--text-1);
+
+		@media (prefers-color-scheme: dark) {
+			text-shadow:
+				0 0 10px var(--indigo-5),
+				0 0 25px var(--indigo-7);
+		}
+
+		@media (prefers-color-scheme: dark) {
+			text-shadow: 0 0 15px var(--indigo-7);
+		}
+
+		font-weight: bold;
+	}
+</style>

@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getProducts } from '../api';
+import ProductList from '../components/ProductList.astro';
+
+const products = await getProducts(Astro.request);
+---
+
+<BaseLayout description="Ecommerce store built with Astro.">
+	<ProductList products={products}>
+		<div slot="title">
+			<h1 itemprop="name">Our products</h1>
+		</div>
+	</ProductList>
+</BaseLayout>

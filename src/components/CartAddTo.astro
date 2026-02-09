@@ -1,0 +1,36 @@
+---
+interface Props {
+    id: number;
+    title: string;
+    price: number;
+    image: string;
+}
+
+const { id, title, price, image } = Astro.props;
+---
+
+<button
+    type="button"
+    class="primary"
+    data-add-to-cart
+>
+    <slot />
+</button>
+
+
+<script is:inline define:vars={{ id, title, price, image }}>
+    const buttons = document.querySelectorAll("[data-add-to-cart]");
+
+    buttons.forEach((button) => {
+        button.addEventListener("click", addToCart);
+    });
+
+    function addToCart() {
+        const astroCart = document.querySelector("astro-cart");
+        if (!astroCart) {
+            console.error("Cart store not available.");
+            return;
+        }
+        astroCart.add({ id, title, price, image });
+    }
+</script>
