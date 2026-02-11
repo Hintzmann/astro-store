@@ -1,25 +1,30 @@
 ---
-import { Image } from 'astro:assets';
+import { Image } from "astro:assets";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getProduct } from "../../api";
 import CartAddTo from "../../components/CartAddTo.astro";
+import { cachedFetch } from "../../lib/apiCache";
 
 const id = Number(Astro.params.id);
-const product = await getProduct(Astro.request, id);
+const URL =
+	import.meta.env.SECRET_FAKESTORE_API_URL ||
+	"https://fakestoreapi.com/products";
+const EXTERNAL = `${URL}/${id}`;
+
+const response = await cachedFetch(EXTERNAL, () => fetch(EXTERNAL), 60_000);
+const product = await response.json();
 ---
 
 <BaseLayout title={product.title} description="{product.description}">
 	<article class="grid" itemscope itemtype="https://schema.org/Product">
 		<div>
 			<div class="popout" style="--popout-padding: var(--size-9);">
-				<Image 
+				<Image
 					src={product.image}
 					alt={product.title}
 					width={600}
 					height={600}
 					itemprop="image"
 				/>
-
 			</div>
 		</div>
 		<div>
@@ -69,7 +74,8 @@ const product = await getProduct(Astro.request, id);
 					id={product.id}
 					title={product.title}
 					price={product.price}
-					image={product.image}>
+					image={product.image}
+				>
 					Add to cart
 				</CartAddTo>
 			</div>

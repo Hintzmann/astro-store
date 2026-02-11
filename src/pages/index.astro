@@ -1,9 +1,14 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { getProducts } from '../api';
-import ProductList from '../components/ProductList.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProductList from "../components/ProductList.astro";
+import { cachedFetch } from "../lib/apiCache";
 
-const products = await getProducts(Astro.request);
+const EXTERNAL =
+	import.meta.env.SECRET_FAKESTORE_API_URL ||
+	"https://fakestoreapi.com/products";
+
+const response = await cachedFetch(EXTERNAL, () => fetch(EXTERNAL), 60_000);
+const products = await response.json();
 ---
 
 <BaseLayout description="Ecommerce store built with Astro.">
