@@ -1,5 +1,6 @@
 ---
 import type { Product } from "../api";
+import { Image } from 'astro:assets';
 
 interface Props {
 	products: Product[];
@@ -36,11 +37,12 @@ const { products } = Astro.props;
 						>
 							<figure>
 								<div class="popout">
-									<img
-										itemprop="image"
+									<Image 
 										src={product.image}
-										alt="{product.title}"
-										fetchpriority="high"
+										alt={product.title}
+										width={300}
+										height={300}
+										itemprop="image"
 									/>
 								</div>
 								<figcaption>

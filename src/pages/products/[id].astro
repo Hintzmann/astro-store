@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getProduct } from "../../api";
 import CartAddTo from "../../components/CartAddTo.astro";
@@ -11,12 +12,14 @@ const product = await getProduct(Astro.request, id);
 	<article class="grid" itemscope itemtype="https://schema.org/Product">
 		<div>
 			<div class="popout" style="--popout-padding: var(--size-9);">
-				<img
-					itemprop="image"
+				<Image 
 					src={product.image}
-					alt="{product.title}"
-					fetchpriority="high"
+					alt={product.title}
+					width={600}
+					height={600}
+					itemprop="image"
 				/>
+
 			</div>
 		</div>
 		<div>
