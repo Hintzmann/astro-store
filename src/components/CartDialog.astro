@@ -11,86 +11,114 @@
 
     <div class="cart-actions">
         <button class="primary" id="cart-clear">Clear</button>
-        <button class="primary" commandfor="cart-dialog" command="close">Close</button>
+        <button class="primary" commandfor="cart-dialog" command="close"
+            >Close</button
+        >
     </div>
 
-    <script is:inline>
-        // TODO: Refactor this to be a web component.
-        (async () => {
-            const contents = document.getElementById('cart-contents');
-            const clearBtn = document.getElementById('cart-clear');
+    <script>
+        type CartUpdateDetail = { items?: AstroCartItem[] };
 
-            function renderItems(items) {
+        (async () => {
+            const contents = document.getElementById(
+                "cart-contents",
+            ) as HTMLElement | null;
+            const clearBtn = document.getElementById(
+                "cart-clear",
+            ) as HTMLButtonElement | null;
+
+            const getStore = (): HTMLAstroCartElement | null =>
+                document.querySelector(
+                    "astro-cart",
+                ) as HTMLAstroCartElement | null;
+
+            function renderItems(items: AstroCartItem[]) {
                 if (!contents) return;
+
                 if (!items || items.length === 0) {
-                    contents.innerHTML = '<p>Your cart is currently empty.</p>';
+                    contents.innerHTML = "<p>Your cart is currently empty.</p>";
                     return;
                 }
 
-                const list = document.createElement('ul');
-                list.className = 'cart-list list-unstyled stack';
+                const list = document.createElement("ul");
+                list.className = "cart-list list-unstyled stack";
 
                 items.forEach((it) => {
-                    const li = document.createElement('li');
-                    li.className = 'cart-item grid';
-                    li.style = '--grid-min: var(--size-9)';
+                    const li = document.createElement("li");
+                    li.className = "cart-item grid";
+
+                    li.style.setProperty("--grid-min", "var(--size-9)");
+
                     li.innerHTML = `
-                        <div class="popout">
-                            <img src="${it.image}" alt="" class="cart-item-img"/>    
-                        </div>
-                        <div>
-                        <div class="cart-item-info">
-                            <div class="cart-item-title"><strong>${String(it.title)}</strong></div>
-                            <div class="cart-item-qty">Qty: ${it.quantity}</div>
-                        </div>
-                        <div class="cart-item-price">$${it.price}</div>
-                        <button class="cart-remove" data-remove-id="${it.id}">Remove</button>
-                        </div>
-                    `;
+        <div class="popout">
+          <img src="${it.image ?? ""}" alt="" class="cart-item-img"/>    
+        </div>
+        <div>
+          <div class="cart-item-info">
+            <div class="cart-item-title"><strong>${String(it.title ?? "")}</strong></div>
+            <div class="cart-item-qty">Qty: ${it.quantity}</div>
+          </div>
+          <div class="cart-item-price">$${it.price}</div>
+          <button class="cart-remove" data-remove-id="${it.id}">Remove</button>
+        </div>
+      `;
                     list.appendChild(li);
                 });
 
-                contents.innerHTML = '';
+                contents.innerHTML = "";
                 contents.appendChild(list);
             }
 
-            function updateFromStore(detail) {
-                if (detail && Array.isArray(detail.items)) {
-                    renderItems(detail.items);
-                } else {
-                    // fallback: try to read the component directly
-                    const el = document.querySelector('astro-cart');
-                    if (el && typeof el.get === 'function') {
-                        renderItems(el.get());
-                    }
+            function updateFromStore(detail: unknown) {
+                const d = detail as CartUpdateDetail | null;
+
+                if (d?.items && Array.isArray(d.items)) {
+                    renderItems(d.items);
+                    return;
+                }
+
+                // fallback: try to read the component directly
+                const store = getStore();
+                if (store && typeof store.get === "function") {
+                    renderItems(store.get());
                 }
             }
 
-            // Listen to cart updates
-            window.addEventListener('cart:update', (e) => updateFromStore(e.detail));
+            window.addEventListener("cart:update", (e: Event) => {
+                if (e instanceof CustomEvent) updateFromStore(e.detail);
+            });
 
-            // Initial render
-            const el = document.querySelector('astro-cart');
-            if (el && typeof el.get === 'function') {
-                renderItems(el.get());
+            {
+                const store = getStore();
+                if (store && typeof store.get === "function") {
+                    renderItems(store.get());
+                }
             }
 
-            // Clear button
             if (clearBtn) {
-                clearBtn.addEventListener('click', () => {
-                    const store = document.querySelector('astro-cart');
-                    if (store && typeof store.clear === 'function') store.clear();
+                clearBtn.addEventListener("click", () => {
+                    const store = getStore();
+                    if (store && typeof store.clear === "function")
+                        store.clear();
                 });
             }
 
-            // Delegate remove button clicks inside cart contents
-            contents && contents.addEventListener('click', (ev) => {
-                const btn = ev.target.closest && ev.target.closest('[data-remove-id]');
-                if (!btn) return;
-                const id = btn.dataset.removeId;
-                const store = document.querySelector('astro-cart');
-                if (store && typeof store.remove === 'function') store.remove(id);
-            });
+            if (contents) {
+                contents.addEventListener("click", (ev: MouseEvent) => {
+                    const target = ev.target;
+                    if (!(target instanceof Element)) return;
+
+                    const btn = target.closest<HTMLElement>("[data-remove-id]");
+                    if (!btn) return;
+
+                    const id = btn.dataset.removeId;
+                    if (!id) return;
+
+                    const store = getStore();
+                    if (store && typeof store.remove === "function")
+                        store.remove(id);
+                });
+            }
         })();
     </script>
 </dialog>
@@ -124,7 +152,7 @@
 
     dialog:modal::backdrop {
         background-color: rgba(0, 0, 0, 0.5);
-    }    
+    }
     h2 {
         margin-block-end: var(--size-8);
     }

@@ -20,7 +20,7 @@ const { id, title, price, image } = Astro.props;
     </button>
 </astro-add-to-cart>
 
-<script is:inline>
+<script>
     (() => {
         customElements.define(
             "astro-add-to-cart",
@@ -28,7 +28,7 @@ const { id, title, price, image } = Astro.props;
                 connectedCallback() {
                     const { id, title, price, image } = this.dataset;
 
-                    const button = this.querySelector("button");
+                    const button = this.querySelector("button") as HTMLElement;
                     button.addEventListener("click", () => {
                         const astroCart = document.querySelector("astro-cart");
 
@@ -37,7 +37,12 @@ const { id, title, price, image } = Astro.props;
                             return;
                         }
 
-                        astroCart.add({ id, title, price, image });
+                        astroCart.add({
+                            id: Number(id),
+                            title: title || "",
+                            price: Number(price),
+                            image: image || "",
+                        });
                     });
                 }
             },
