@@ -1,0 +1,165 @@
+---
+
+---
+
+<astro-cart></astro-cart>
+
+<script>
+    type CartItem = {
+        id: string;
+        title?: string;
+        price: string | number;
+        image?: string;
+        quantity: number;
+    };
+    type AddItemInput = {
+        id: string;
+        title?: string;
+        price: string | number;
+        image?: string;
+    };
+
+    type CartUpdateDetail = {
+        count: number;
+        items: CartItem[];
+    };
+
+    //  implements EventListenerObject
+    class AstroCart extends HTMLElement {
+        #STORAGE_KEY = "astro-cart" as const;
+
+        connectedCallback() {
+            // Listen for storage events from other tabs/windows
+            window.addEventListener("storage", this);
+            // Emit initial update
+            this.#dispatchUpdate();
+        }
+
+        disconnectedCallback() {
+            window.removeEventListener("storage", this);
+        }
+
+        handleEvent(event: Event) {
+            if (
+                event instanceof StorageEvent &&
+                event.key === this.#STORAGE_KEY
+            ) {
+                this.#dispatchUpdate();
+            }
+        }
+
+        /* Private Methods */
+        #readCart(): CartItem[] {
+            try {
+                const raw = localStorage.getItem(this.#STORAGE_KEY);
+                const parsed: unknown = raw ? JSON.parse(raw) : [];
+
+                if (!Array.isArray(parsed)) return [];
+
+                // Light validation / normalization so the rest of the code can be typed safely
+                return parsed
+                    .map((it): CartItem | null => {
+                        if (!it || typeof it !== "object") return null;
+                        const obj = it as Partial<CartItem>;
+
+                        const id = obj.id != null ? String(obj.id) : "";
+                        if (!id) return null;
+
+                        const quantity =
+                            typeof obj.quantity === "number"
+                                ? obj.quantity
+                                : Number(obj.quantity ?? 0);
+
+                        return {
+                            id,
+                            title:
+                                obj.title != null
+                                    ? String(obj.title)
+                                    : undefined,
+                            price: (obj.price ?? "") as string | number,
+                            image:
+                                obj.image != null
+                                    ? String(obj.image)
+                                    : undefined,
+                            quantity: Number.isFinite(quantity) ? quantity : 0,
+                        };
+                    })
+                    .filter((x): x is CartItem => x !== null);
+            } catch {
+                return [];
+            }
+        }
+
+        #writeCart(cart: CartItem[]): void {
+            try {
+                localStorage.setItem(this.#STORAGE_KEY, JSON.stringify(cart));
+            } catch {
+                // ignore storage failures (private mode/quota/etc.)
+            }
+        }
+
+        #dispatchUpdate(): void {
+            const items = this.#readCart();
+            const count = items.reduce(
+                (sum, it) => sum + (it.quantity || 0),
+                0,
+            );
+
+            window.dispatchEvent(
+                new CustomEvent<CartUpdateDetail>("cart:update", {
+                    detail: { count, items },
+                }),
+            );
+        }
+
+        // Public API
+        add({ id, title, price, image }: AddItemInput): this {
+            const cart = this.#readCart();
+            const key = String(id);
+
+            const existing = cart.find((c) => String(c.id) === key);
+
+            if (existing) {
+                existing.quantity = (existing.quantity || 0) + 1;
+            } else {
+                cart.push({ id: key, title, price, image, quantity: 1 });
+            }
+
+            this.#writeCart(cart);
+            this.#dispatchUpdate();
+            return this;
+        }
+
+
+        /* Remove is a reserved word on HTMLElement */
+        removeItem(id: string): this {
+            const key = String(id);
+            const cart = this.#readCart().filter((c) => String(c.id) !== key);
+
+            this.#writeCart(cart);
+            this.#dispatchUpdate();
+            return this;
+        }
+
+        clear(): this {
+            this.#writeCart([]);
+            this.#dispatchUpdate();
+            return this;
+        }
+
+        get(): CartItem[] {
+            return this.#readCart();
+        }
+
+        count(): number {
+            return this.#readCart().reduce(
+                (sum, it) => sum + (it.quantity || 0),
+                0,
+            );
+        }
+    }
+
+    if (!customElements.get("astro-cart")) {
+        customElements.define("astro-cart", AstroCart);
+    }
+</script>

@@ -24,6 +24,9 @@ const product = await response.json();
 					width={600}
 					height={600}
 					itemprop="image"
+					quality="high"
+					fetchpriority="high"
+					loading="eager"
 				/>
 			</div>
 		</div>
@@ -129,14 +132,14 @@ const product = await response.json();
 	}
 
 	[itemprop="ratingValue"] {
-		--star-size: var(--size-5);
-		--star-color: light-dark(var(--gray-5), var(--gray-6));
-		--star-background: var(--purple-5);
+		--size: var(--size-5);
+		--color: light-dark(var(--gray-5), var(--gray-6));
+		--background: var(--purple-5);
 		--percent: calc(var(--rating) / 5 * 100%);
 
 		color: var(--text-1);
 		display: inline-block;
-		font-size: var(--star-size);
+		font-size: var(--size);
 		line-height: 1;
 		font-weight: bold;
 
@@ -145,8 +148,8 @@ const product = await response.json();
 			letter-spacing: 3px;
 			background: linear-gradient(
 				90deg,
-				var(--star-background) var(--percent),
-				var(--star-color) var(--percent)
+				var(--background) var(--percent),
+				var(--color) var(--percent)
 			);
 			-webkit-background-clip: text;
 			-webkit-text-fill-color: transparent;

@@ -1,17 +1,5 @@
-/* 
-    Open Props
-    Total Library: ~13.2 KB minificeret + gzipped  
-    @import "open-props/style"; 
-*/
-@import "open-props/indigo";
-@import "open-props/gray";
-@import "open-props/purple";
-@import "open-props/borders";
-@import "open-props/shadows";
-@import "open-props/gradients";
-@import "open-props/fonts";
-@import "open-props/sizes";
-@import "open-props/easings";
+@layer layout, components;
+
 @import "open-props/buttons";
 
 @media (prefers-color-scheme: dark) {
@@ -123,8 +111,7 @@ figcaption {
 
 @layer layout {
     .container {
-        --container-max-width: 90rem;
-        max-width: var(--container-max-width);
+        max-width: 90rem;
         margin-inline: auto;
     }
 
@@ -143,19 +130,14 @@ figcaption {
 }
 
 .popout {
-    --popout-padding: var(--size-6);
-    --popout-offset: var(--size-4);
-    --popout-background: var(--surface-1);
-    --popout-radius: var(--radius-4);
-
-    background: var(--popout-background);
-    border-radius: var(--popout-radius);
-    padding: var(--popout-padding);
+    background: var(--surface-1);
+    border-radius: var(--radius-4);
+    padding: var(--size-6);
     padding-block: 0;
 
     >img {
         position: relative;
-        top: calc(var(--popout-offset) * -1);
+        top: calc(var(--size-4) * -1);
     }
 }
 
@@ -189,7 +171,6 @@ button.primary {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     *,
     :after,
     :before {

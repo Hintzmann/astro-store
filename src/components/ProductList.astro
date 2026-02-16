@@ -40,9 +40,12 @@ const { products } = Astro.props;
 									<Image 
 										src={product.image}
 										alt={product.title}
-										width={300}
-										height={300}
+										width={250}
+										height={250}
 										itemprop="image"
+										quality="1"
+										fetchpriority="high"
+										loading="eager"
 									/>
 								</div>
 								<figcaption>
@@ -80,7 +83,7 @@ const { products } = Astro.props;
 		margin-block: var(--size-fluid-4);
 	}
 
-	[itemprop="itemListElement"] {
+	/* [itemprop="itemListElement"] {
 		transition:
 			transform 1s var(--ease-spring-3) 0.5s,
 			opacity 1s ease 0.5s;
@@ -90,7 +93,7 @@ const { products } = Astro.props;
 			opacity: 0;
 			transform: scale(0);
 		}
-	}
+	} */
 
 	[itemprop="item"] {
 		padding-block-start: 0;

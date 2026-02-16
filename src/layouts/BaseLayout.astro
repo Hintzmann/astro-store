@@ -1,6 +1,7 @@
 ---
-import Header from '../components/Header.astro';
-import '../css/global.css';
+import Header from "../components/Header.astro";
+import AstroCart from "../components/AstroCart.astro";
+import "../css/global.css";
 
 interface Props {
 	title?: string;
@@ -8,29 +9,26 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
-const pageTitle = title ? `${title} | Astro Store` : 'Astro Store'
+const pageTitle = title ? `${title} | Astro Store` : "Astro Store";
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8">
+		<meta charset="UTF-8" />
 		<title>{pageTitle}</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="description" content={description} />
 		<meta name="generator" content={Astro.generator} />
-		<script src="/src/js/astroCartClient.js"></script>
 		<slot name="head" />
 	</head>
 	<body>
+		<AstroCart />
 		<Header />
 		<main class="container">
 			<slot />
 		</main>
-		<astro-cart></astro-cart>
 	</body>
 </html>
-
-
